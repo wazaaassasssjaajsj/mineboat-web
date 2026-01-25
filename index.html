@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mineboat - Panel Admin</title>
+    <title>Mineboat - Servidor Minecraft</title>
     <style>
         * {
             margin: 0;
@@ -13,390 +13,488 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #00BFFF 0%, #87CEEB 100%);
-            min-height: 100vh;
-            padding: 20px;
+            overflow: hidden;
+            background: #00BFFF;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        /* Efecto Lava Lamp */
+        .lava-container {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #00BFFF 0%, #87CEEB 50%, #ffffff 100%);
+            overflow: hidden;
+            z-index: 1;
         }
 
-        .login-box {
-            background: white;
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(135, 206, 235, 0.8), rgba(0, 191, 255, 0.4));
+            animation: float 15s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        .bubble:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            left: 10%;
+            animation-duration: 12s;
+            animation-delay: 0s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            left: 60%;
+            animation-duration: 18s;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 180px;
+            height: 180px;
+            left: 80%;
+            animation-duration: 14s;
+            animation-delay: 4s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 120px;
+            height: 120px;
+            left: 30%;
+            animation-duration: 16s;
+            animation-delay: 1s;
+        }
+
+        .bubble:nth-child(5) {
+            width: 160px;
+            height: 160px;
+            left: 45%;
+            animation-duration: 20s;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) scale(1);
+            }
+            50% {
+                transform: translateY(-20vh) scale(1.2);
+            }
+        }
+
+        /* Contenido */
+        .content {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo {
+            display: none;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #E0F7FF;
+            text-shadow: 
+                0 0 10px #FFFFFF,
+                0 0 20px #FFFFFF,
+                0 0 30px #87CEEB,
+                0 0 40px #87CEEB,
+                0 0 50px #00BFFF,
+                0 0 60px #00BFFF,
+                0 0 70px #00BFFF;
+            margin-bottom: 80px;
+            letter-spacing: 12px;
+            position: relative;
+            padding: 20px 40px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            border-radius: 10px;
+            animation: neonPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 
+                    0 0 10px #FFFFFF,
+                    0 0 20px #FFFFFF,
+                    0 0 30px #87CEEB,
+                    0 0 40px #87CEEB,
+                    0 0 50px #00BFFF,
+                    0 0 60px #00BFFF,
+                    0 0 70px #00BFFF;
+            }
+            to {
+                text-shadow: 
+                    0 0 5px #FFFFFF,
+                    0 0 15px #FFFFFF,
+                    0 0 20px #87CEEB,
+                    0 0 30px #87CEEB,
+                    0 0 35px #00BFFF,
+                    0 0 45px #00BFFF,
+                    0 0 55px #00BFFF;
+            }
+        }
+
+        .title::before {
+            content: '⚓';
+            position: absolute;
+            left: -60px;
+            font-size: 50px;
+            animation: wave 2s infinite ease-in-out;
+        }
+
+        .title::after {
+            content: '⛵';
+            position: absolute;
+            right: -60px;
+            font-size: 50px;
+            animation: wave 2s infinite ease-in-out;
+            animation-delay: 1s;
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 40px;
+        }
+
+        .btn {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(145deg, #00BFFF, #1E90FF);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn svg {
+            width: 60px;
+            height: 60px;
+            fill: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #ffffff, #f0f8ff);
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            animation: modalFade 0.3s ease;
         }
 
-        .login-box h1 {
+        @keyframes modalFade {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-content h2 {
             color: #00BFFF;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
+            font-size: 32px;
             margin-bottom: 20px;
-            text-align: left;
         }
 
-        .form-group label {
-            display: block;
+        .modal-content p {
             color: #333;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #87CEEB;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #00BFFF;
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        button {
-            padding: 12px 30px;
-            background: linear-gradient(145deg, #00BFFF, #1E90FF);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            font-size: 20px;
+            margin: 10px 0;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 191, 255, 0.4);
+        .modal-content p:hover {
+            transform: scale(1.05);
+            opacity: 0.8;
         }
 
-        .error {
-            color: red;
-            margin-top: 10px;
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00FF00;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Anuncio Banner */
+        .announcement-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(145deg, #00BFFF, #1E90FF);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 50;
+            animation: slideUp 0.5s ease;
             display: none;
         }
 
-        .success {
-            color: green;
-            margin-top: 10px;
-            display: none;
+        .announcement-banner.active {
+            display: block;
         }
 
-        .hidden {
-            display: none;
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
         }
 
-        .admin-section {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
+        .announcement-banner p {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
         }
 
-        .admin-section h2 {
-            color: #00BFFF;
-            margin-bottom: 20px;
-        }
-
-        .logout-btn {
-            background: #ff4444;
-            margin-bottom: 20px;
-        }
-
-        .logout-btn:hover {
-            background: #cc0000;
-        }
-
-        .announcements-list {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .announcement-item {
-            background: #f0f8ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid #00BFFF;
-            position: relative;
-        }
-
-        .announcement-date {
-            color: #666;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .delete-btn {
+        .announcement-banner .close-announcement {
             position: absolute;
             top: 10px;
-            right: 10px;
-            background: #ff4444;
-            padding: 5px 10px;
-            font-size: 12px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+        .close {
             margin-top: 20px;
-        }
-
-        .stat-box {
-            background: #f0f8ff;
-            padding: 20px;
+            padding: 12px 30px;
+            background: #00BFFF;
+            color: white;
+            border: none;
             border-radius: 10px;
-            text-align: center;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
         }
 
-        .stat-box h3 {
-            color: #00BFFF;
-            font-size: 32px;
-            margin: 10px 0;
+        .close:hover {
+            background: #1E90FF;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- LOGIN -->
-        <div id="loginSection" class="login-box">
-            <h1>🔐 Panel de Administración</h1>
-            <h2>MINEBOAT</h2>
-            
-            <div class="form-group">
-                <label>Usuario</label>
-                <input type="text" id="loginUser" placeholder="mineboat">
-            </div>
-            
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="loginPass" placeholder="Ingresa tu contraseña">
-            </div>
-            
-            <button onclick="doLogin()">Iniciar Sesión</button>
-            <p class="error" id="loginError">❌ Credenciales incorrectas</p>
+    <div class="lava-container">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="content">
+        <h1 class="title">MINEBOAT</h1>
+
+        <div class="buttons-container">
+            <!-- Botón Discord -->
+            <button class="btn" onclick="openModal('discord')">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+                </svg>
+            </button>
+
+            <!-- Botón Minecraft -->
+            <button class="btn" onclick="openModal('minecraft')">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 3v18h18V3H3zm6 6h6v6H9V9zm-3 3h2v4H6v-4zm12 0h2v4h-2v-4z"/>
+                    <rect x="7" y="5" width="2" height="2"/>
+                    <rect x="15" y="5" width="2" height="2"/>
+                </svg>
+            </button>
+
+            <!-- Botón Tienda -->
+            <button class="btn" onclick="openModal('shop')">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+            </button>
         </div>
+    </div>
 
-        <!-- ADMIN PANEL -->
-        <div id="adminSection" class="hidden">
-            <button class="logout-btn" onclick="doLogout()">Cerrar Sesión</button>
-            
-            <div class="admin-section">
-                <h1>Bienvenido, Administrador 🚢</h1>
-                <p>Panel de control de Mineboat</p>
-            </div>
+    <!-- Anuncio Banner -->
+    <div class="announcement-banner" id="announcementBanner">
+        <button class="close-announcement" onclick="closeAnnouncement()">×</button>
+        <p id="announcementText"></p>
+    </div>
 
-            <!-- ANUNCIOS -->
-            <div class="admin-section">
-                <h2>📢 Publicar Anuncio en la Página</h2>
-                <div class="form-group">
-                    <label>Mensaje del anuncio</label>
-                    <textarea id="announcementText" placeholder="Escribe el anuncio que aparecerá en la página principal..."></textarea>
-                </div>
-                <button onclick="publishAnnouncement()">Publicar Anuncio</button>
-                <p class="success" id="announcementSuccess">✅ Anuncio publicado exitosamente</p>
-                
-                <div class="announcements-list">
-                    <h3 style="color: #00BFFF;">Anuncios Activos:</h3>
-                    <div id="announcementsList"></div>
-                </div>
-            </div>
+    <!-- Modal Discord -->
+    <div id="discordModal" class="modal">
+        <div class="modal-content">
+            <h2>¡ÚNETE A NUESTRO DISCORD!</h2>
+            <p style="color: #00D9FF; font-size: 18px;" onclick="copyToClipboard('https://discord.gg/g3j85EXhYh')" title="Click para copiar">https://discord.gg/g3j85EXhYh</p>
+            <button class="close" onclick="closeModal('discord')">Cerrar</button>
+        </div>
+    </div>
 
-            <!-- DISCORD -->
-            <div class="admin-section">
-                <h2>💬 Enviar Mensaje a Discord</h2>
-                <div class="form-group">
-                    <label>Mensaje</label>
-                    <textarea id="discordText" placeholder="Mensaje para Discord..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Canal (opcional)</label>
-                    <input type="text" id="discordChannel" placeholder="#anuncios">
-                </div>
-                <button onclick="sendToDiscord()">Enviar a Discord</button>
-                <p class="success" id="discordSuccess">✅ Mensaje enviado a Discord</p>
-            </div>
+    <!-- Modal Minecraft -->
+    <div id="minecraftModal" class="modal">
+        <div class="modal-content">
+            <h2>¡ENTRA AHORA!</h2>
+            <p onclick="copyToClipboard('mineboat.fun')" title="Click para copiar">IP: mineboat.fun</p>
+            <button class="close" onclick="closeModal('minecraft')">Cerrar</button>
+        </div>
+    </div>
 
-            <!-- ESTADÍSTICAS -->
-            <div class="admin-section">
-                <h2>📊 Estadísticas</h2>
-                <div class="stats">
-                    <div class="stat-box">
-                        <p>Anuncios Publicados</p>
-                        <h3 id="statAnnouncements">0</h3>
-                    </div>
-                    <div class="stat-box">
-                        <p>Mensajes a Discord</p>
-                        <h3 id="statDiscord">0</h3>
-                    </div>
-                </div>
-                <p style="margin-top: 15px;">🕐 Última actividad: <strong id="lastActivity">Nunca</strong></p>
-            </div>
+    <!-- Modal Tienda -->
+    <div id="shopModal" class="modal">
+        <div class="modal-content">
+            <h2>¡ADQUIERE TUS ARTÍCULOS!</h2>
+            <p onclick="copyToClipboard('tienda.mineboat.fun')" title="Click para copiar">Link: tienda.mineboat.fun</p>
+            <button class="close" onclick="closeModal('shop')">Cerrar</button>
         </div>
     </div>
 
     <script>
-        const USER = 'mineboat';
-        const PASS = '67';
-
-        let data = {
-            announcements: [],
-            stats: { announcements: 0, discord: 0, lastActivity: 'Nunca' }
+        // Cargar anuncios al iniciar
+        window.onload = function() {
+            loadAnnouncements();
         };
 
-        function loadData() {
-            const saved = localStorage.getItem('mineboatData');
-            if (saved) {
-                data = JSON.parse(saved);
+        function loadAnnouncements() {
+            const announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+            if (announcements.length > 0) {
+                const latestAnnouncement = announcements[announcements.length - 1];
+                document.getElementById('announcementText').textContent = latestAnnouncement.message;
+                document.getElementById('announcementBanner').classList.add('active');
             }
         }
 
-        function saveData() {
-            localStorage.setItem('mineboatData', JSON.stringify(data));
+        function closeAnnouncement() {
+            document.getElementById('announcementBanner').classList.remove('active');
         }
 
-        function doLogin() {
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value;
-            
-            if (user === USER && pass === PASS) {
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('adminSection').classList.remove('hidden');
-                loadData();
-                updateUI();
+        function openModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.style.display = 'none';
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('¡Copiado al portapapeles!');
+                }).catch(err => {
+                    fallbackCopy(text);
+                });
             } else {
-                const error = document.getElementById('loginError');
-                error.style.display = 'block';
-                setTimeout(() => error.style.display = 'none', 3000);
+                fallbackCopy(text);
             }
         }
 
-        function doLogout() {
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('adminSection').classList.add('hidden');
-            document.getElementById('loginUser').value = '';
-            document.getElementById('loginPass').value = '';
-        }
-
-        function publishAnnouncement() {
-            const text = document.getElementById('announcementText').value.trim();
-            if (!text) {
-                alert('Escribe un mensaje');
-                return;
+        function fallbackCopy(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showNotification('¡Copiado al portapapeles!');
+            } catch (err) {
+                showNotification('Error al copiar. Copia manualmente: ' + text);
             }
-
-            const announcement = {
-                id: Date.now(),
-                text: text,
-                date: new Date().toLocaleString('es-ES')
-            };
-
-            data.announcements.push(announcement);
-            data.stats.announcements++;
-            data.stats.lastActivity = new Date().toLocaleString('es-ES');
             
-            saveData();
-            
-            document.getElementById('announcementText').value = '';
-            const success = document.getElementById('announcementSuccess');
-            success.style.display = 'block';
-            setTimeout(() => success.style.display = 'none', 3000);
-            
-            updateUI();
+            document.body.removeChild(textArea);
         }
 
-        function deleteAnnouncement(id) {
-            data.announcements = data.announcements.filter(a => a.id !== id);
-            saveData();
-            updateUI();
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 2000);
         }
 
-        function sendToDiscord() {
-            const text = document.getElementById('discordText').value.trim();
-            const channel = document.getElementById('discordChannel').value.trim();
-            
-            if (!text) {
-                alert('Escribe un mensaje');
-                return;
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
             }
-
-            const WEBHOOK_URL = 'https://discord.com/api/webhooks/1461535930652561493/rvWf74O-Z1xgk7lyZN-IV1Nnf_FVHzQQZmT-dyHARiA0H9rAuMHcbYLuESDhMtsQ4QIE';
-            
-            const payload = {
-                content: text,
-                username: 'Mineboat Admin'
-            };
-
-            if (channel) {
-                payload.content = `**${channel}**\n${text}`;
-            }
-
-            fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (response.ok) {
-                    data.stats.discord++;
-                    data.stats.lastActivity = new Date().toLocaleString('es-ES');
-                    saveData();
-                    
-                    document.getElementById('discordText').value = '';
-                    document.getElementById('discordChannel').value = '';
-                    const success = document.getElementById('discordSuccess');
-                    success.style.display = 'block';
-                    setTimeout(() => success.style.display = 'none', 3000);
-                    
-                    updateUI();
-                } else {
-                    alert('Error al enviar mensaje a Discord');
-                }
-            })
-            .catch(err => {
-                alert('Error de conexión: ' + err.message);
-            });
         }
-
-        function updateUI() {
-            const list = document.getElementById('announcementsList');
-            if (data.announcements.length === 0) {
-                list.innerHTML = '<p style="color: #999;">No hay anuncios</p>';
-            } else {
-                list.innerHTML = data.announcements.map(a => `
-                    <div class="announcement-item">
-                        <button class="delete-btn" onclick="deleteAnnouncement(${a.id})">Eliminar</button>
-                        <p>${a.text}</p>
-                        <div class="announcement-date">${a.date}</div>
-                    </div>
-                `).join('');
-            }
-
-            document.getElementById('statAnnouncements').textContent = data.stats.announcements;
-            document.getElementById('statDiscord').textContent = data.stats.discord;
-            document.getElementById('lastActivity').textContent = data.stats.lastActivity;
-        }
-
-        loadData();
     </script>
 </body>
-              </html>
+    </html>
