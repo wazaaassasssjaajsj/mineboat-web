@@ -25,6 +25,7 @@
             background: linear-gradient(135deg, #00BFFF 0%, #87CEEB 50%, #ffffff 100%);
             overflow: hidden;
             z-index: 1;
+            will-change: transform;
         }
 
         .bubble {
@@ -33,6 +34,7 @@
             background: radial-gradient(circle at 30% 30%, rgba(135, 206, 235, 0.8), rgba(0, 191, 255, 0.4));
             animation: float 15s infinite ease-in-out;
             opacity: 0.6;
+            will-change: transform;
         }
 
         .bubble:nth-child(1) {
@@ -326,6 +328,123 @@
             font-weight: bold;
         }
 
+        /* Menú Hamburguesa */
+        .hamburger-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #00BFFF, #1E90FF);
+            border-radius: 10px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            transform: scale(1.1);
+        }
+
+        .hamburger-menu span {
+            width: 30px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(180deg, #00BFFF, #1E90FF);
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            transition: right 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            padding: 80px 30px 30px 30px;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .menu-item-icon {
+            font-size: 30px;
+            margin-right: 15px;
+        }
+
+        .menu-item-text {
+            color: white;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .sidebar h2 {
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
         .close {
             margin-top: 20px;
             padding: 12px 30px;
@@ -350,6 +469,26 @@
         <div class="bubble"></div>
         <div class="bubble"></div>
         <div class="bubble"></div>
+    </div>
+
+    <!-- Menú Hamburguesa -->
+    <div class="hamburger-menu" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2>MENÚ</h2>
+        
+        <div class="menu-item" onclick="contactSupport()">
+            <div class="menu-item-icon">👮</div>
+            <div class="menu-item-text">Contacto del Soporte</div>
+        </div>
     </div>
 
     <div class="content">
@@ -419,6 +558,20 @@
         window.onload = function() {
             loadAnnouncements();
         };
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const hamburger = document.querySelector('.hamburger-menu');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        function contactSupport() {
+            window.location.href = 'mailto:soportemineboat@gmail.com?subject=Soporte Mineboat&body=Hola equipo de Mineboat,%0D%0A%0D%0AMe gustaría contactar con soporte sobre:%0D%0A%0D%0A';
+        }
 
         function loadAnnouncements() {
             const announcements = JSON.parse(localStorage.getItem('announcements')) || [];
@@ -497,4 +650,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
